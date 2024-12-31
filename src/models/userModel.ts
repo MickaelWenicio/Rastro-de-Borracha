@@ -1,11 +1,11 @@
 class User {
     private id: number;
-    private name: string;
-    private roleId: number;
+    name: string;
+    roleId: number;
     private email: string;
     private password: string;
-    private createdAt: Date;
-    private updatedAt: Date;
+    createdAt: Date;
+    updatedAt: Date;
 
     constructor(
         id: number,
@@ -27,11 +27,7 @@ class User {
 
     // getters
 
-    getName(){
-        return this.name;
-    };
-
-    getEmail(){
+    getEmail(){ 
         return this.email;
     };
 
@@ -39,35 +35,15 @@ class User {
         return this.password;
     };
 
-    getLastUpdate(){
-        return this.updatedAt;
-    };
-
-    getCreatedAt(){
-        return this.createdAt;
-    };
-
     getId(){
         return this.id;
     };
 
-    getRoleId(){
-        return this.roleId;
-    };
-
     // setters
-
-    setName(newName:string){
-        this.name = newName;
-    };
 
     setPassword(newPassword:string){
         this.password = newPassword;
     };
-
-    setRole(newRole:number){
-        this.roleId = newRole;
-    }
 
     setNewUpdate(newDate: Date){
         this.updatedAt = newDate;
