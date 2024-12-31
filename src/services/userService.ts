@@ -27,11 +27,45 @@ class userService{
 
             return users
         } catch (err){
-            console.error("Error: It's not possible to return users: " + err);
+            console.error("It's not possible to return users. " + err);
         };
     };
 
-    
+    async createUser(data: {
+        name: string,
+        email: string,
+        password: string,
+        role_id: number
+    }){
+        try{
+            const sql = `
+                INSERT INTO users (
+                    name,
+                    email,
+                    password,
+                    role_id
+                ) VALUES (
+                    $1,
+                    $2,
+                    $3,
+                    $4
+                );
+            `;
+
+            const {name, email, password, role_id} = data;
+
+            await client.query(sql, [
+                name,
+                email,
+                password,
+                role_id
+            ]);
+            
+            console.log("New user created successfully.");
+        } catch (err){
+            console.error("Cannot create user. " + err)
+        }
+    };
 };
 
 export default new userService();
