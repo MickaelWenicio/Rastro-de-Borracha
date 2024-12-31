@@ -1,4 +1,4 @@
-class post {
+export default class post {
     private id: number;
     title: string;
     authorId: number;

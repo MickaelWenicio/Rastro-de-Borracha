@@ -1,4 +1,4 @@
-class User {
+export default class User {
     private id: number;
     name: string;
     roleId: number;
