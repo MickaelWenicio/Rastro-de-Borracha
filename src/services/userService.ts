@@ -66,6 +66,23 @@ class userService{
             console.error("Cannot create user. " + err)
         }
     };
+
+    async deleteUser(userId: number){
+        try{
+            const sql = `
+                DELETE FROM user
+                WHERE user.id = $1
+            `;
+
+            const id = userId;
+
+            await client.query(sql, [id]);
+
+            console.log(`User ${id} deleted successfully.`);
+        }catch(err){
+            console.error("Cannot delete user. " + err);
+        };
+    };
 };
 
 export default new userService();
