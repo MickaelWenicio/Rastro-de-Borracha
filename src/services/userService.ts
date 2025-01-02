@@ -28,7 +28,7 @@ class userService{
 
             return users
         } catch (err){
-            console.error("It's not possible to return users. " + err);
+            throw new Error("An unexpected error occurred in listUsers. " + err);
         };
     };
 
@@ -68,11 +68,25 @@ class userService{
             
             console.log("New user created successfully.");
         } catch (err){
-            console.error("Cannot create user. " + err)
+            throw new Error("An unexpected error occurred in createUser. " + err);
         }
     };
 
+    async deleteUser(userId: number){
+        try{
+            const sql = `
+                DELETE FROM users
+                WHERE user.id = $1
+            `;
 
+            const id = Number(userId);
+
+            await client.query(sql, [id]);
+            console.log(`User ${id} deleted successfully.`);
+        }catch(err){
+            throw new Error("An unexpected error occurred in deleteUser. " + err);
+        };
+    };
 };
 
 export default new userService();
