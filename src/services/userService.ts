@@ -18,7 +18,8 @@ class userService{
             const users = rows.map( row => new user(
                 row.id,
                 row.name,
-                row.role_id,
+                row.is_admin,
+                row.is_editor,
                 row.email,
                 row.password,
                 row.created_at,
@@ -35,7 +36,8 @@ class userService{
         name: string,
         email: string,
         password: string,
-        role_id: number
+        isAdmin: boolean,
+        isEditor: boolean
     }){
         try{
             const sql = `
@@ -43,22 +45,25 @@ class userService{
                     name,
                     email,
                     password,
-                    role_id
+                    is_admin,
+                    is_editor
                 ) VALUES (
                     $1,
                     $2,
                     $3,
-                    $4
+                    $4,
+                    $5
                 );
             `;
 
-            const {name, email, password, role_id} = data;
+            const {name, email, password, isAdmin, isEditor} = data;
 
             await client.query(sql, [
                 name,
                 email,
                 password,
-                role_id
+                isAdmin,
+                isEditor
             ]);
             
             console.log("New user created successfully.");
@@ -67,22 +72,7 @@ class userService{
         }
     };
 
-    async deleteUser(userId: number){
-        try{
-            const sql = `
-                DELETE FROM user
-                WHERE user.id = $1
-            `;
 
-            const id = userId;
-
-            await client.query(sql, [id]);
-
-            console.log(`User ${id} deleted successfully.`);
-        }catch(err){
-            console.error("Cannot delete user. " + err);
-        };
-    };
 };
 
 export default new userService();

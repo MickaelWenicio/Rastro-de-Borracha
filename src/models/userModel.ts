@@ -1,7 +1,8 @@
 export default class user {
     private id: number;
     name: string;
-    roleId: number;
+    isAdmin: boolean;
+    isEditor: boolean;
     private email: string;
     private password: string;
     createdAt: Date;
@@ -10,7 +11,8 @@ export default class user {
     constructor(
         id: number,
         name: string,
-        roleId: number,
+        isAdmin: boolean,
+        isEditor: boolean,
         email: string,
         password: string,
         createdAt: Date = new Date(),
@@ -18,7 +20,8 @@ export default class user {
     ) {
         this.id = id;
         this.name = name;
-        this.roleId = roleId;
+        this.isAdmin = isAdmin;
+        this.isEditor = isEditor;
         this.email = email;
         this.password = password;
         this.createdAt = createdAt;

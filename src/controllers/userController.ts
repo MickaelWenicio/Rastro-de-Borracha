@@ -8,7 +8,7 @@ class userController {
         try{
             const list = await userService.listUsers();
             res.status(200).json(list);
-        }catch (err){
+        }catch (err) {
             console.error(err);
             res.status(500).json({ error: "An error occurred while retrieving users." });
         };
@@ -16,14 +16,15 @@ class userController {
 
     async create (req: Request, res: Response){
         try{
-            const {name, email, password, role_id} = req.body;
-            await userService.createUser({name, email, password, role_id});
+            const {name, email, password, isAdmin, isEditor} = req.body;
+            await userService.createUser({name, email, password, isAdmin, isEditor});
             res.status(201).json({ message: "User created successfully." });
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: "An error occurred while creating the user." });
         };
     };
+
 }
 
 export default new userController();
