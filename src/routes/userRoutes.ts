@@ -7,5 +7,7 @@ userRouter.get('/list', userController.getAll);
 
 userRouter.post('/create', userController.create);
 
+userRouter.delete('/delete', userController.delete);
+
 export default userRouter;
 
