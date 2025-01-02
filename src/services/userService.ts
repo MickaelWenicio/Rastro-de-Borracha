@@ -76,7 +76,7 @@ class userService{
         try{
             const sql = `
                 DELETE FROM users
-                WHERE user.id = $1
+                WHERE users.id = $1
             `;
 
             const id = Number(userId);
