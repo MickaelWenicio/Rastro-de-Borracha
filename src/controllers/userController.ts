@@ -2,7 +2,7 @@ import { Request, Response, NextFunction} from "express";
 import userService from "../services/userService";
 
 class userController {
-    constructor(){}
+    constructor(){};
 
     async getAll (req: Request, res: Response){
         try{
@@ -25,6 +25,16 @@ class userController {
         };
     };
 
-}
+    async delete (req: Request, res: Response){
+        try{
+            const {id} = req.body;
+            await userService.deleteUser(id);
+            res.status(200).json({message: "User deleted successfully."});
+        }catch (err) {
+            console.error(err);
+            res.status(500).json({ error: "An error occurred while deleting the user." });
+        };
+    };
+};
 
 export default new userController();
