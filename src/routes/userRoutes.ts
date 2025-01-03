@@ -9,5 +9,7 @@ userRouter.post('/create', userController.create);
 
 userRouter.delete('/delete', userController.delete);
 
+userRouter.patch('/update/name', userController.updateUserName);
+
 export default userRouter;
 

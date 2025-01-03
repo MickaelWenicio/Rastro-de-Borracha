@@ -87,6 +87,38 @@ class userService{
             throw new Error("An unexpected error occurred in deleteUser. " + err);
         };
     };
+
+    async updateUserName(data:{
+        id: number,
+        name: string,
+        updatedAt: Date
+    }){
+        try{
+            
+
+            const sql = `
+                UPDATE users
+                SET name = $1, updated_at = $2
+                WHERE users.id = $3;
+            `;
+
+            const {id, name, updatedAt} = data;
+
+            if(!name || !updatedAt){
+                throw new Error("Name or updated at is empty.")
+            }
+            
+            await client.query(sql, [
+                name,
+                updatedAt,
+                id
+            ]);
+
+            console.log(`Username of user ${id} updated successfully.`)
+        }catch(err){
+            throw new Error("An unexpected error in updateUserName. " + err);
+        }
+    }
 };
 
 export default new userService();
