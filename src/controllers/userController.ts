@@ -42,12 +42,23 @@ class userController {
             const newUpdateDate = new Date();
 
             await userService.updateUserName({id: id, name: name, updatedAt: newUpdateDate});
-            res.status(200).json({message: `User name changed successfully.`});
+            res.status(200).json({message: "Username changed successfully."});
         }catch (err) {
             console.error(err);
             res.status(500).json({ error: "An error occurred while updating the username." });
         };
     };
+
+    async getSingle (req: Request, res: Response){
+        try{
+            let {id, email} = req.body;
+            const user = await userService.listSingleUser({id, email});
+            res.status(200).json(user);
+        }catch(err){
+            console.error(err);
+            res.status(500).json({ error: "An error occurred while get the user." });
+        }
+    }
 };
 
 export default new userController();
