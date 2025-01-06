@@ -89,7 +89,7 @@ class userService{
         };
     };
 
-    async updateUserName(data:{
+    async updateUserName(data: {
         id: number,
         name: string,
         updatedAt: Date
@@ -105,7 +105,7 @@ class userService{
 
             if(!name || !updatedAt){
                 throw new Error("Name or updated at is empty.")
-            }
+            };
             
             await client.query(sql, [
                 name,
@@ -113,15 +113,15 @@ class userService{
                 id
             ]);
 
-            console.log(`Username of user ${id} updated successfully.`)
+            console.log(`Username of user ${id} updated successfully.`);
         }catch(err){
             throw new Error("An unexpected error in updateUserName. " + err);
-        }
-    }
+        };
+    };
 
-    async listSingleUser ( data: {
-        id: number | null,
-        email: number | null
+    async getSingleUser(data: {
+        id?: number | null,
+        email?: string | null
     }){
         const {id, email} = data;
         let whereClause;
@@ -162,6 +162,38 @@ class userService{
         };
     };
     
+    async updatePassword(data: {
+        id: number,
+        oldPassword: string,
+        newPassword: string,
+        updatedAt: Date
+    }){
+        try{
+            const {id, oldPassword, newPassword, updatedAt} = data;
+            
+            const selectedUser = this.getSingleUser({id});
+
+            if((await selectedUser).getPassword() !== oldPassword){
+                throw new Error("Incorrect password. Please enter the correct password to proceed.");
+            };
+
+            const sql = `
+                UPDATE users
+                SET password = $1, updated_at = $2
+                WHERE users.id = $3;
+            `;
+
+            await client.query(sql, [
+                newPassword,
+                updatedAt,
+                id
+            ]);
+
+            console.log(`Password of user ${id} updated successfully.`);
+        }catch(err){
+            throw new Error("An unexpected error in updatePassword. " + err);
+        };
+    };
 };
 
 export default new userService();

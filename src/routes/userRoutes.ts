@@ -11,7 +11,9 @@ userRouter.delete('/delete', userController.delete);
 
 userRouter.patch('/update/name', userController.updateUserName);
 
-userRouter.get('/get-single', userController.getSingle)
+userRouter.get('/get-single', userController.getSingle);
+
+userRouter.patch('/password', userController.updatePassword);
 
 export default userRouter;
 

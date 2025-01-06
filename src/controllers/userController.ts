@@ -52,13 +52,26 @@ class userController {
     async getSingle (req: Request, res: Response){
         try{
             let {id, email} = req.body;
-            const user = await userService.listSingleUser({id, email});
+            const user = await userService.getSingleUser({id, email});
             res.status(200).json(user);
         }catch(err){
             console.error(err);
             res.status(500).json({ error: "An error occurred while get the user." });
         }
     }
+
+    async updatePassword (req: Request, res: Response){
+        try{
+            const {id, newPassword, oldPassword} = req.body;
+            const newUpdateDate = new Date();
+
+            await userService.updatePassword({id: id, newPassword: newPassword, oldPassword: oldPassword, updatedAt: newUpdateDate});
+            res.status(200).json({message: "Password changed successfully."});
+        }catch (err) {
+            console.error(err);
+            res.status(500).json({ error: "An error occurred while updating the password." });
+        };
+    };
 };
 
 export default new userController();
