@@ -9,15 +9,18 @@ export default class user {
     updatedAt: Date;
 
     constructor(
-        id: number,
-        name: string,
-        isAdmin: boolean,
-        isEditor: boolean,
-        email: string,
-        password: string,
-        createdAt: Date = new Date(),
-        updatedAt: Date = new Date()
+        data: {
+            id: number,
+            name: string,
+            isAdmin: boolean,
+            isEditor: boolean,
+            email: string,
+            password: string,
+            createdAt: Date,
+            updatedAt: Date
+        }
     ) {
+        const { id, name, isAdmin, isEditor, email, password, createdAt, updatedAt } = data;
         this.id = id;
         this.name = name;
         this.isAdmin = isAdmin;
