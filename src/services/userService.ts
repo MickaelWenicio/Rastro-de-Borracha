@@ -90,6 +90,45 @@ class userService{
         };
     };
 
+    async updateUser(data: {
+        id: number,
+        name: string,
+        isAdmin: boolean,
+        isEditor: boolean,
+        email: string,
+        password: string,
+        createdAt: Date,
+        updatedAt: Date
+    }){
+        const sql = `
+            UPDATE users
+            SET
+                name = $2,
+                is_admin = $3,
+                is_editor = $4,
+                email = $5,
+                password = $6,
+                created_at = $7,
+                updated_at = $8
+            WHERE users.id = $1
+        `;
+
+        try{
+            await client.query(sql, [
+                data.id,
+                data.name,
+                data.isAdmin,
+                data.isEditor,
+                data.email,
+                data.password,
+                data.createdAt,
+                data.updatedAt
+            ]);
+        }catch(err){
+            throw new Error("An unexpected error in updateUser. " + err)
+        };
+    };
+
     async updateUserName(data: {
         id: number,
         name: string,
