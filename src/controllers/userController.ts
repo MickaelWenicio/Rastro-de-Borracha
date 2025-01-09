@@ -41,7 +41,7 @@ class userController {
             const {id, name} = req.body;
             const newUpdateDate = new Date();
 
-            await userService.updateUserName({id: id, name: name, updatedAt: newUpdateDate});
+            await userService.updateUserName({id: id, name: name});
             res.status(200).json({message: "Username changed successfully."});
         }catch (err) {
             console.error(err);
@@ -63,13 +63,11 @@ class userController {
     async updatePassword (req: Request, res: Response){
         try{
             const {id, newPassword, oldPassword} = req.body;
-            const newUpdateDate = new Date();
 
             await userService.updatePassword({
                 id: id, 
                 newPassword: newPassword, 
-                oldPassword: oldPassword, 
-                updatedAt: newUpdateDate
+                oldPassword: oldPassword
             });
             res.status(200).json({message: "Password changed successfully."});
         }catch (err) {
@@ -80,15 +78,12 @@ class userController {
 
     async updateRole (req: Request, res: Response){
         const {id, isAdmin, isEditor} = req.body;
-
-        const newUpdateDate = new Date();
         
         try{
             await userService.updateRole({
                 userId: id, 
                 isAdmin: isAdmin, 
                 isEditor: isEditor, 
-                updatedAt: newUpdateDate
             });
             res.status(200).json({message: "User roles updated successfully."});
         }catch(err){

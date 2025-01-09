@@ -6,8 +6,8 @@ class userService{
     constructor(){}
 
     async listUsers(){
+        const sql = "SELECT * FROM users";
         try{
-            const sql = "SELECT * FROM users";
             const response = await client.query(sql, []);
             const { rows } = response;
 
@@ -40,26 +40,30 @@ class userService{
         isAdmin: boolean,
         isEditor: boolean
     }){
+        const sql = `
+            INSERT INTO users (
+                name,
+                email,
+                password,
+                is_admin,
+                is_editor
+            ) VALUES (
+                $1,
+                $2,
+                $3,
+                $4,
+                $5
+            );
+        `;
+
+        const {name, email, password, isAdmin} = data;
+        let {isEditor} = data
+
+        if(isAdmin){
+            isEditor = true;
+        }
+        
         try{
-            const sql = `
-                INSERT INTO users (
-                    name,
-                    email,
-                    password,
-                    is_admin,
-                    is_editor
-                ) VALUES (
-                    $1,
-                    $2,
-                    $3,
-                    $4,
-                    $5
-                );
-            `;
-
-
-            const {name, email, password, isAdmin, isEditor} = data;
-
             await client.query(sql, [
                 name,
                 email,
@@ -67,7 +71,6 @@ class userService{
                 isAdmin,
                 isEditor
             ]);
-            
             console.log("New user created successfully.");
         } catch (err){
             throw new Error("An unexpected error occurred in createUser. " + err);
@@ -75,14 +78,14 @@ class userService{
     };
 
     async deleteUser(userId: number){
+        const sql = `
+            DELETE FROM users
+            WHERE users.id = $1
+        `;
+
+        const id = Number(userId);
+        
         try{
-            const sql = `
-                DELETE FROM users
-                WHERE users.id = $1
-            `;
-
-            const id = Number(userId);
-
             await client.query(sql, [id]);
             console.log(`User ${id} deleted successfully.`);
         }catch(err){
@@ -113,6 +116,8 @@ class userService{
             WHERE users.id = $1
         `;
 
+        data.updatedAt = new Date();
+
         try{
             await client.query(sql, [
                 data.id,
@@ -132,59 +137,41 @@ class userService{
     async updateUserName(data: {
         id: number,
         name: string,
-        updatedAt: Date
     }){
+        const {id, name} = data;
+        const user = await this.getSingleUser({id});
+        user.name = name;
+
         try{
-            const sql = `
-                UPDATE users
-                SET name = $1, updated_at = $2
-                WHERE users.id = $3;
-            `;
-
-            const {id, name, updatedAt} = data;
-
-            if(!name || !updatedAt){
-                throw new Error("Name or updated at is empty.")
-            };
-            
-            await client.query(sql, [
-                name,
-                updatedAt,
-                id
-            ]);
-
+            await this.updateUser(user.toObject());
             console.log(`Username of user ${id} updated successfully.`);
         }catch(err){
             throw new Error("An unexpected error in updateUserName. " + err);
         };
     };
 
-    async getSingleUser(data: {
-        id?: number | null,
-        email?: string | null
-    }){
+    async getSingleUser(data: Partial<{
+        id: number,
+        email: string
+    }>){
         const {id, email} = data;
         let whereClause;
 
+        if (!id && !email) {
+            throw new Error("No email or ID was provided. Please enter a valid email or ID.");
+        };
+        
+        if(id && email){
+            throw new Error("Both email and ID were provided. Please enter only one of them.");
+        };
+
+        whereClause = email ? "WHERE users.email = $1" : "WHERE users.id = $1";
+        const param = email || id;
+        const sql = `SELECT * FROM users ` + whereClause;
+
         try{
-            if (!id && !email) {
-                throw new Error("No email or ID was provided. Please enter a valid email or ID.");
-            };
-            
-            if(id && email){
-                throw new Error("Both email and ID were provided. Please enter only one of them.");
-            };
-
-            whereClause = email ? "WHERE users.email = $1" : "WHERE users.id = $1";
-
-            const param = email || id;
-
-            const sql = `SELECT * FROM users ` + whereClause;
-
             const response = await client.query(sql, [param]);
-
             const data = response.rows[0];
-
             const selectedUser = new user({
                 name: data.name,
                 id: data.id,
@@ -206,29 +193,19 @@ class userService{
         id: number,
         oldPassword: string,
         newPassword: string,
-        updatedAt: Date
     }){
-        try{
-            const {id, oldPassword, newPassword, updatedAt} = data;
+        const {id, oldPassword, newPassword} = data;
             
-            const selectedUser = this.getSingleUser({id});
+        const user = await this.getSingleUser({id});
 
-            if((await selectedUser).getPassword() !== oldPassword){
-                throw new Error("Incorrect password. Please enter the correct password to proceed.");
-            };
+        if(user.getPassword() !== oldPassword){
+            throw new Error("Incorrect password. Please enter the correct password to proceed.");
+        };
 
-            const sql = `
-                UPDATE users
-                SET password = $1, updated_at = $2
-                WHERE users.id = $3;
-            `;
+        user.setPassword(newPassword);;
 
-            await client.query(sql, [
-                newPassword,
-                updatedAt,
-                id
-            ]);
-
+        try{
+            this.updateUser(user.toObject());
             console.log(`Password of user ${id} updated successfully.`);
         }catch(err){
             throw new Error("An unexpected error in updatePassword. " + err);
@@ -238,28 +215,21 @@ class userService{
     async updateRole(data: {
         userId: number,
         isAdmin: boolean,
-        isEditor: boolean,
-        updatedAt: Date
+        isEditor: boolean
     }) {
-        const {userId, isAdmin, updatedAt} = data;
-        let {isEditor} = data
-        try{
-            const sql = `
-                UPDATE users
-                SET is_admin = $1, is_editor = $2, updated_at = $3
-                WHERE users.id = $4
-            `
+        const {userId, isAdmin} = data;
+        let {isEditor} = data;
 
-            if(isAdmin){
-                isEditor = true;
-            };
-            
-            await client.query(sql, [
-                isAdmin, 
-                isEditor, 
-                updatedAt, 
-                userId
-            ]);
+        if(isAdmin){
+            isEditor = true;
+        };
+
+        const user = await this.getSingleUser({id:userId});
+        user.isAdmin = isAdmin;
+        user.isEditor = isEditor;
+
+        try{
+            this.updateUser(user.toObject());
             console.log("User roles updated successfully.");
         }catch (err){
             throw new Error("An unexpected error in updateUserRole. " + err);
