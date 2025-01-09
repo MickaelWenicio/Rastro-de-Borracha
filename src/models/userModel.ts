@@ -45,6 +45,19 @@ export default class user {
         return this.id;
     };
 
+    toObject(){
+        return {
+            id: this.id,
+            name: this.name,
+            isAdmin: this.isAdmin,
+            isEditor: this.isEditor,
+            email: this.email,
+            password: this.password,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
+        };
+    };
+
     // setters
 
     setPassword(newPassword:string){
