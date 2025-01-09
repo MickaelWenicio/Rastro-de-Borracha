@@ -1,5 +1,6 @@
 import user from "../models/userModel";
 import client from '../config/database';
+import { query } from "express";
 
 class userService{
     constructor(){}
@@ -192,6 +193,37 @@ class userService{
             console.log(`Password of user ${id} updated successfully.`);
         }catch(err){
             throw new Error("An unexpected error in updatePassword. " + err);
+        };
+    };
+
+    async updateRole(data: {
+        userId: number,
+        isAdmin: boolean,
+        isEditor: boolean,
+        updatedAt: Date
+    }) {
+        const {userId, isAdmin, updatedAt} = data;
+        let {isEditor} = data
+        try{
+            const sql = `
+                UPDATE users
+                SET is_admin = $1, is_editor = $2, updated_at = $3
+                WHERE users.id = $4
+            `
+
+            if(isAdmin){
+                isEditor = true;
+            };
+            
+            await client.query(sql, [
+                isAdmin, 
+                isEditor, 
+                updatedAt, 
+                userId
+            ]);
+            console.log("User roles updated successfully.");
+        }catch (err){
+            throw new Error("An unexpected error in updateUserRole. " + err);
         };
     };
 };
